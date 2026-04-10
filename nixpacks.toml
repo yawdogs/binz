@@ -1,6 +1,10 @@
 # Railway / Nixpacks build config
-# Installs Playwright's Chromium + its OS dependencies during build
-# so /api/refresh can actually drive a browser in production.
+# Installs Playwright's Chromium + its OS dependencies during build.
+# PLAYWRIGHT_BROWSERS_PATH points inside /app so the browser binaries
+# are copied into the runtime image (the default ~/.cache path is not).
+
+[variables]
+PLAYWRIGHT_BROWSERS_PATH = "/app/.cache/ms-playwright"
 
 [phases.setup]
 nixPkgs = ["python311", "gcc"]
@@ -10,8 +14,8 @@ cmds = [
   "python -m venv /opt/venv",
   ". /opt/venv/bin/activate && pip install --upgrade pip",
   ". /opt/venv/bin/activate && pip install -r requirements.txt",
-  ". /opt/venv/bin/activate && playwright install --with-deps chromium",
+  ". /opt/venv/bin/activate && PLAYWRIGHT_BROWSERS_PATH=/app/.cache/ms-playwright playwright install --with-deps chromium",
 ]
 
 [start]
-cmd = ". /opt/venv/bin/activate && gunicorn web:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1"
+cmd = ". /opt/venv/bin/activate && PLAYWRIGHT_BROWSERS_PATH=/app/.cache/ms-playwright gunicorn web:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1"
