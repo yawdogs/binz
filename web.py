@@ -87,53 +87,191 @@ def current_user():
 # Templates
 # ---------------------------------------------------------------------------
 
-STYLE = """
+HEAD = """
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b9e6e" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a1512" media="(prefers-color-scheme: dark)">
 <style>
-  :root { color-scheme: light dark; }
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f8f7;
+    --surface: #ffffff;
+    --surface-2: #f1f3f2;
+    --border: #e2e5e3;
+    --text: #10201a;
+    --muted: #64726b;
+    --accent: #0b9e6e;
+    --accent-contrast: #ffffff;
+    --accent-soft: #0b9e6e14;
+    --danger: #c0392b;
+    --warn: #e67e22;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 2px rgba(16, 32, 26, 0.04), 0 8px 24px rgba(16, 32, 26, 0.06);
+    --focus: 0 0 0 3px #0b9e6e40;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a1512;
+      --surface: #121e1a;
+      --surface-2: #18262114;
+      --border: #1f2e28;
+      --text: #e7efe9;
+      --muted: #8a9992;
+      --accent: #2dd4a0;
+      --accent-contrast: #05201a;
+      --accent-soft: #2dd4a022;
+      --danger: #ff7a6b;
+      --warn: #ffb366;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.35);
+      --focus: 0 0 0 3px #2dd4a060;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
-    max-width: 560px; margin: 2rem auto; padding: 0 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    padding: max(1rem, env(safe-area-inset-top))
+             max(1rem, env(safe-area-inset-right))
+             max(1.5rem, env(safe-area-inset-bottom))
+             max(1rem, env(safe-area-inset-left));
   }
-  h1 { margin-bottom: 0.25rem; }
-  nav { margin-bottom: 1.5rem; font-size: 0.9rem; }
-  nav a, nav span { margin-right: 0.75rem; }
-  .meta { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; }
-  ul.bins { list-style: none; padding: 0; }
-  ul.bins li {
-    display: flex; justify-content: space-between;
-    padding: 0.75rem 1rem; margin-bottom: 0.5rem;
-    border: 1px solid #ccc3; border-radius: 8px;
+  .wrap { max-width: 36rem; margin: 0 auto; }
+
+  nav {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem;
+    padding: 0.75rem 0; margin-bottom: 1rem;
+    font-size: 0.925rem;
+    border-bottom: 1px solid var(--border);
   }
-  .bin { font-weight: 600; }
-  .date { color: #0a7; }
-  .soon .date { color: #e60; font-weight: 600; }
-  form.stack { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
-  form.stack label { display: flex; flex-direction: column; font-size: 0.9rem; }
+  nav a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  nav a:hover { text-decoration: underline; }
+  nav .spacer { flex: 1; }
+  nav .user { color: var(--muted); font-size: 0.875rem; }
+
+  h1 {
+    font-size: clamp(1.5rem, 4vw + 1rem, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0.5rem 0 0.25rem;
+  }
+  .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 1.25rem; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  @media (min-width: 480px) {
+    .card { padding: 1.5rem; }
+  }
+
+  form.stack { display: flex; flex-direction: column; gap: 1rem; margin: 0; }
+  form.stack label {
+    display: flex; flex-direction: column; gap: 0.375rem;
+    font-size: 0.825rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
   input[type=text], input[type=email], input[type=password] {
-    padding: 0.5rem; font-size: 1rem; border-radius: 6px;
-    border: 1px solid #888; background: transparent; color: inherit;
+    width: 100%;
+    font: inherit; font-size: 1rem;
+    padding: 0.75rem 0.875rem;
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
+  input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--focus);
+  }
+  input::placeholder { color: var(--muted); opacity: 0.7; }
+
+  .row {
+    display: flex; align-items: center; gap: 0.625rem;
+    font-size: 0.9rem; font-weight: 400; color: var(--text);
+    text-transform: none; letter-spacing: 0;
+  }
+  .row input[type=checkbox] {
+    width: 1.15rem; height: 1.15rem; accent-color: var(--accent);
+  }
+
   button {
-    padding: 0.6rem 1.2rem; font-size: 1rem; cursor: pointer;
-    border-radius: 6px; border: 1px solid #888;
-    background: #0a7; color: white;
+    width: 100%;
+    font: inherit; font-size: 1rem; font-weight: 600;
+    padding: 0.875rem 1.25rem;
+    min-height: 48px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: var(--accent); color: var(--accent-contrast);
+    transition: transform 0.05s, filter 0.15s, box-shadow 0.15s;
   }
-  .error { color: #c00; }
-  .flash { padding: 0.5rem 1rem; background: #0a71; border-radius: 6px; margin-bottom: 1rem; }
-  .empty { color: #888; font-style: italic; }
-  .row { display: flex; gap: 0.5rem; align-items: center; }
+  button:hover { filter: brightness(1.05); }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { box-shadow: var(--focus); outline: none; }
+
+  ul.bins { list-style: none; padding: 0; margin: 0; }
+  ul.bins li {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.125rem;
+    margin-bottom: 0.625rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  ul.bins li:last-child { margin-bottom: 0; }
+  .bin { font-weight: 600; font-size: 1rem; }
+  .date {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted); font-size: 0.925rem; text-align: right;
+  }
+  .soon { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, var(--surface)); }
+  .soon .date { color: var(--warn); font-weight: 700; }
+  .soon .bin::before { content: "• "; color: var(--warn); }
+
+  .error { color: var(--danger); margin: 0 0 1rem; font-size: 0.925rem; }
+  .flash {
+    padding: 0.75rem 1rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    font-size: 0.925rem;
+  }
+  .empty { color: var(--muted); font-style: italic; margin: 0; }
+
+  @media (min-width: 480px) {
+    button.inline { width: auto; }
+  }
 </style>
 """
 
 NAV = """
 <nav>
   <a href="{{ url_for('index') }}">Home</a>
+  <span class="spacer"></span>
   {% if user %}
-    <span>{{ user['email'] }}</span>
+    <span class="user">{{ user['email'] }}</span>
     <a href="{{ url_for('logout') }}">Sign out</a>
   {% else %}
     <a href="{{ url_for('login') }}">Sign in</a>
-    <a href="{{ url_for('register') }}">Create account</a>
+    <a href="{{ url_for('register') }}">Register</a>
   {% endif %}
 </nav>
 {% with messages = get_flashed_messages() %}
@@ -142,68 +280,86 @@ NAV = """
 """
 
 INDEX_HTML = """<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>When is binz?</title>""" + STYLE + """</head>
+<html lang="en"><head><title>When is binz?</title>""" + HEAD + """</head>
 <body>
+<div class="wrap">
 """ + NAV + """
 <h1>When is binz?</h1>
 <p class="meta">Waltham Forest council portal lookup.</p>
 
-<form class="stack" method="post" action="{{ url_for('check') }}">
-  <label>Postcode
-    <input type="text" name="postcode" value="{{ postcode or '' }}" required placeholder="E17 3BT">
-  </label>
-  <label>House number or name
-    <input type="text" name="house_number" value="{{ house_number or '' }}" required placeholder="12">
-  </label>
-  {% if user %}
-    <label class="row">
-      <input type="checkbox" name="save_details" value="1" checked>
-      Save as my default
+<div class="card">
+  <form class="stack" method="post" action="{{ url_for('check') }}">
+    <label>Postcode
+      <input type="text" name="postcode" value="{{ postcode or '' }}"
+             required placeholder="E17 3BT"
+             autocomplete="postal-code" autocapitalize="characters"
+             inputmode="text" spellcheck="false">
     </label>
-  {% endif %}
-  <button type="submit">Check collections</button>
-</form>
+    <label>House number or name
+      <input type="text" name="house_number" value="{{ house_number or '' }}"
+             required placeholder="12"
+             autocomplete="street-address">
+    </label>
+    {% if user %}
+      <label class="row">
+        <input type="checkbox" name="save_details" value="1" checked>
+        Save as my default
+      </label>
+    {% endif %}
+    <button type="submit">Check collections</button>
+  </form>
+</div>
 
 {% if data %}
-  <div class="meta">
-    {% if data.address %}{{ data.address }}<br>{% endif %}
-    Last checked: {{ data.checked_at }}
+  <div class="card">
+    <p class="meta">
+      {% if data.address %}<strong style="color: var(--text);">{{ data.address }}</strong><br>{% endif %}
+      Checked {{ data.checked_at }}
+    </p>
+    {% if data.collections %}
+      <ul class="bins">
+        {% for c in data.collections %}
+          <li class="{% if c.soon %}soon{% endif %}">
+            <span class="bin">{{ c.bin_type }}</span>
+            <span class="date">{{ c.friendly or c.date_raw }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No collections found.</p>
+    {% endif %}
   </div>
-  {% if data.collections %}
-    <ul class="bins">
-      {% for c in data.collections %}
-        <li class="{% if c.soon %}soon{% endif %}">
-          <span class="bin">{{ c.bin_type }}</span>
-          <span class="date">{{ c.friendly or c.date_raw }}</span>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="empty">No collections found.</p>
-  {% endif %}
 {% endif %}
 
 {% if not user %}
-  <p class="meta"><a href="{{ url_for('register') }}">Create an account</a> to save your address.</p>
+  <p class="meta"><a href="{{ url_for('register') }}" style="color: var(--accent);">Create an account</a> to save your address.</p>
 {% endif %}
+</div>
 </body></html>
 """
 
 AUTH_HTML = """<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>{{ title }} &mdash; When is binz?</title>""" + STYLE + """</head>
+<html lang="en"><head><title>{{ title }} &mdash; When is binz?</title>""" + HEAD + """</head>
 <body>
+<div class="wrap">
 """ + NAV + """
 <h1>{{ title }}</h1>
-{% if error %}<p class="error">{{ error }}</p>{% endif %}
-<form class="stack" method="post">
-  <label>Email
-    <input type="email" name="email" value="{{ email or '' }}" required autofocus>
-  </label>
-  <label>Password
-    <input type="password" name="password" required>
-  </label>
-  <button type="submit">{{ title }}</button>
-</form>
+<div class="card">
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <form class="stack" method="post">
+    <label>Email
+      <input type="email" name="email" value="{{ email or '' }}"
+             required autofocus autocomplete="email" inputmode="email"
+             spellcheck="false">
+    </label>
+    <label>Password
+      <input type="password" name="password" required
+             autocomplete="{% if title == 'Sign in' %}current-password{% else %}new-password{% endif %}">
+    </label>
+    <button type="submit">{{ title }}</button>
+  </form>
+</div>
+</div>
 </body></html>
 """
 
