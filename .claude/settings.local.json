@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:portal.walthamforest.gov.uk)",
+      "WebFetch(domain:www.walthamforest.gov.uk)",
+      "WebFetch(domain:fs-filestore-eu.s3.eu-west-1.amazonaws.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/robbrad/UKBinCollectionData/master/uk_bin_collection/uk_bin_collection/councils/WalthamForest.py\" 2>/dev/null | head -200)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/robbrad/UKBinCollectionData/master/uk_bin_collection/uk_bin_collection/councils/WalthamForest.py\")",
+      "Bash(python --version && pip --version)",
+      "Bash(pip install:*)",
+      "Bash(python -m playwright install chromium 2>&1 | tail -5)",
+      "Bash(python bin_checker.py --verbose --save 2>&1)"
+    ]
+  }
+}

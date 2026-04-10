@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-04-09 20:13:10",
+  "address": "12 Seaford Road, E17 3BT",
+  "collections": [
+    {
+      "bin_type": "Recycling Collection Service",
+      "date_raw": "Friday 10 April",
+      "date": "2026-04-10"
+    },
+    {
+      "bin_type": "Refuse Collection Service",
+      "date_raw": "Friday 10 April",
+      "date": "2026-04-10"
+    },
+    {
+      "bin_type": "Garden Waste Collection Service",
+      "date_raw": "Friday 17 April",
+      "date": "2026-04-17"
+    },
+    {
+      "bin_type": "Food Waste Collection Service",
+      "date_raw": "Friday 10 April",
+      "date": "2026-04-10"
+    }
+  ]
+}
