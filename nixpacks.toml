@@ -1,0 +1,17 @@
+# Railway / Nixpacks build config
+# Installs Playwright's Chromium + its OS dependencies during build
+# so /api/refresh can actually drive a browser in production.
+
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+cmds = [
+  "python -m venv /opt/venv",
+  ". /opt/venv/bin/activate && pip install --upgrade pip",
+  ". /opt/venv/bin/activate && pip install -r requirements.txt",
+  ". /opt/venv/bin/activate && playwright install --with-deps chromium",
+]
+
+[start]
+cmd = ". /opt/venv/bin/activate && gunicorn web:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1"

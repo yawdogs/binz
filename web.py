@@ -8,6 +8,7 @@ Usage:
 
 import argparse
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -16,7 +17,7 @@ from flask import Flask, jsonify, render_template_string, request
 from bin_checker import fetch_bin_collections, load_config
 
 APP_DIR = Path(__file__).parent
-RESULTS_PATH = APP_DIR / "last_check.json"
+RESULTS_PATH = Path(os.environ.get("RESULTS_PATH", APP_DIR / "last_check.json"))
 
 app = Flask(__name__)
 
@@ -168,8 +169,17 @@ def api_refresh():
 
 def main():
     parser = argparse.ArgumentParser(description="Bin checker web UI")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=5000)
+    parser.add_argument(
+        "--host",
+        default=os.environ.get("HOST", "0.0.0.0"),
+        help="Bind host (default: 0.0.0.0, override with $HOST)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("PORT", "5000")),
+        help="Bind port (default: $PORT or 5000)",
+    )
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
     app.run(host=args.host, port=args.port, debug=args.debug)
