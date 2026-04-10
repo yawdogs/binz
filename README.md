@@ -28,7 +28,14 @@ python web.py                # http://127.0.0.1:5000
 python web.py --port 8080    # custom port
 ```
 
-Shows cached results from `last_check.json` and has a **Refresh now** button that triggers a fresh scrape. JSON is also available at `/api/results`.
+Enter any Waltham Forest postcode and house number in the form to look up collections. Optional sign-in lets you save your address and last result across sessions.
+
+**Environment variables:**
+- `PORT`, `HOST` — bind target (Railway sets `PORT`)
+- `SECRET_KEY` — Flask session secret. **Set a stable value in production**, otherwise sessions are invalidated on every restart.
+- `DB_PATH` — SQLite file location (default `./binz.db`). On Railway, point this at a mounted volume so accounts survive redeploys.
+
+JSON of the last result is available at `/api/results`.
 
 ## Scheduling (Windows)
 
